@@ -17,6 +17,10 @@ return {
     config = function()
         require("conform").setup({
             formatters_by_ft = {
+                typescript = { "prettier" },
+                javascript = { "prettier" },
+                typescriptreact = { "prettier" },
+                javascriptreact = { "prettier" },
             }
         })
         local cmp = require('cmp')
@@ -56,7 +60,6 @@ return {
                     })
                     vim.g.zig_fmt_parse_errors = 0
                     vim.g.zig_fmt_autosave = 0
-
                 end,
                 ["lua_ls"] = function()
                     local lspconfig = require("lspconfig")

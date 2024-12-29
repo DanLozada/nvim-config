@@ -22,9 +22,9 @@ return {
             builtin.grep_string({ search = word })
         end)
         vim.keymap.set('n', '<leader>ps', function()
-            builtin.grep_string({ search = vim.fn.input("Grep > ") })
+            builtin.live_grep({ default_text = vim.fn.input("Grep > ")})
         end)
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
+        vim.keymap.set('n', 'gr', builtin.lsp_references)
     end
 }
-

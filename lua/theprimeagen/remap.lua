@@ -1,4 +1,3 @@
-
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
@@ -16,10 +15,10 @@ vim.keymap.set("n", "<leader>zig", "<cmd>LspRestart<cr>")
 vim.keymap.set("x", "<leader>p", [["_dP]])
 
 -- next greatest remap ever : asbjornHaland
-vim.keymap.set({"n", "v"}, "<leader>y", [["+y]])
+vim.keymap.set({ "n", "v" }, "<leader>y", [["+y]])
 vim.keymap.set("n", "<leader>Y", [["+Y]])
 
-vim.keymap.set({"n", "v"}, "<leader>d", "\"_d")
+vim.keymap.set({ "n", "v" }, "<leader>d", "\"_d")
 
 -- This is going to get me cancelled
 vim.keymap.set("i", "<C-c>", "<Esc>")
@@ -67,3 +66,51 @@ vim.keymap.set("n", "<leader><leader>", function()
     vim.cmd("so")
 end)
 
+-- Add this to your keymaps.lua or init.lua
+vim.keymap.set('n', '<leader>hp', function()
+    -- Get current file and line number
+    local file = vim.fn.expand('%:p')
+    local line = vim.api.nvim_win_get_cursor(0)[1]
+
+    print("Getting blame for " .. file .. " line " .. line)
+
+    -- Run git blame to get the commit hash
+    local blame = vim.fn.system(string.format('git blame -L %d,%d %s', line, line, file))
+    print("Blame output: " .. blame)
+
+    -- Extract the commit hash (first word of git blame output)
+    local hash = blame:match('^%^?(%x+)')
+    if not hash then
+        print("No commit hash found")
+        return
+    end
+    print("Found hash: " .. hash)
+
+    -- Get the GitHub URL
+    local remote_url = vim.fn.system('git config --get remote.origin.url'):gsub('\n', '')
+    print("Remote URL: " .. remote_url)
+
+    -- Convert SSH URL to HTTPS URL if needed
+    remote_url = remote_url:gsub("^git@github.com:", "https://github.com/")
+    remote_url = remote_url:gsub("%.git$", "")
+
+    if remote_url:match("^https://github.com/") then
+        local commit_url = string.format('%s/commit/%s', remote_url, hash)
+        print("Opening: " .. commit_url)
+
+        local cmd
+        if vim.fn.has('mac') == 1 then
+            cmd = 'open'
+        elseif vim.fn.has('unix') == 1 then
+            cmd = 'xdg-open'
+        elseif vim.fn.has('win32') == 1 then
+            cmd = 'start'
+        end
+
+        if cmd then
+            vim.fn.system(string.format('%s "%s"', cmd, commit_url))
+        end
+    else
+        print("Not a GitHub repository")
+    end
+end)
