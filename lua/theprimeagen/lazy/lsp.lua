@@ -21,6 +21,7 @@ return {
                 javascript = { "prettier" },
                 typescriptreact = { "prettier" },
                 javascriptreact = { "prettier" },
+                python = { "black" }
             }
         })
         local cmp = require('cmp')
@@ -38,12 +39,50 @@ return {
                 "lua_ls",
                 "rust_analyzer",
                 "gopls",
+                "tsserver",
+                "pyright",
             },
             handlers = {
                 function(server_name) -- default handler (optional)
                     require("lspconfig")[server_name].setup {
                         capabilities = capabilities
                     }
+                end,
+
+                pyright = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.pyright.setup({
+                        capabilities = capabilities,
+                        settings = {
+                            pyright = {
+                                analysis = {
+                                    autoSearchPaths = true,
+                                    useLibraryCodeForTypes = true,
+                                    diagnosticMode = "workspace"
+                                }
+                            }
+                        }
+                    })
+                end,
+
+                tsserver = function()
+                    local lspconfig = require("lspconfig")
+                    lspconfig.tsserver.setup({
+                        capabilities = capabilities,
+                        settings = {
+                            tsserver = {
+                                completions = {
+                                    completeFunctionCalls = true,
+                                },
+                                suggest = {
+                                    autoImports = true,
+                                },
+                                format = {
+                                    enable = true
+                                }
+                            }
+                        }
+                    })
                 end,
 
                 zls = function()
