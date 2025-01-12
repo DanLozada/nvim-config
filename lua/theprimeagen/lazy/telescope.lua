@@ -8,16 +8,7 @@ return {
     },
 
     config = function()
-        require('telescope').setup({
-            pickers = {
-                find_files = { theme = "ivy" },
-                live_grep = { theme = "ivy" },
-                grep_string = { theme = "ivy" },
-                help_tags = { theme = "ivy" },
-                lsp_references = { theme = "ivy" },
-                git_files = { theme = "ivy" },
-            },
-        })
+        require('telescope').setup({})
 
         local builtin = require('telescope.builtin')
         vim.keymap.set('n', '<leader>pf', builtin.find_files, {})
@@ -32,7 +23,12 @@ return {
         end)
         vim.keymap.set('n', '<leader>vh', builtin.help_tags, {})
         vim.keymap.set('n', 'gr', builtin.lsp_references)
-
+        -- Add this to your telescope config file (usually in lua/config/telescope.lua or init.lua)
+        vim.keymap.set('n', '<leader>/', function()
+            require('telescope.builtin').live_grep({
+                search_dirs = { vim.fn.expand('%:p') }
+            })
+        end, { desc = 'Live grep current file' })
         require("theprimeagen.telescope.multigrep").setup()
     end
 }
